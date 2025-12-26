@@ -14,7 +14,12 @@ class _CartScreenState extends ConsumerState<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final reducedItems = ref.watch(cartNotifierProvider);
+    final itemProvider = ref.watch(cartProvider);
+    // final total = itemProvider.fold(
+    //   0,
+    //   (sum, item) => sum + item.price,
+    // );
+    final totalPrice = ref.watch(cartTotalProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -23,31 +28,42 @@ class _CartScreenState extends ConsumerState<CartScreen> {
       ),
       body: Container(
         padding: const EdgeInsets.all(30),
-        child: Column(
-          children: [
-            Column(
-              children: reducedItems.map(
-                (e) {
-                  return Container(
-                    padding: const EdgeInsets.only(top: 5, bottom: 5),
-                    child: Row(
-                      children: [
-                        Image.asset(
-                          e.image,
-                          height: 60,
-                          width: 60,
-                        ),
-                        Text('${e.title}...'),
-                        Expanded(child: SizedBox()),
-                        Text('\$  ${e.price}'),
-                      ],
-                    ),
-                  );
-                },
-              ).toList(),
+        child: Column(children: [
+          Column(
+            children: itemProvider.map(
+              (e) {
+                return Container(
+                  padding: const EdgeInsets.only(top: 5, bottom: 5),
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        e.image,
+                        height: 60,
+                        width: 60,
+                      ),
+                      Text('${e.title}...'),
+                      const Expanded(child: SizedBox()),
+                      Text('\$${e.price}'),
+                    ],
+                  ),
+                );
+              },
+            ).toList(),
+          ),
+          if (totalPrice != 0)
+            const Divider(
+              color: Colors.blue,
+              thickness: 2.0,
             ),
-          ],
-        ),
+          Row(
+            children: [
+              if (totalPrice != 0) ...[
+                const Expanded(child: SizedBox()),
+                Text('Total: \$$totalPrice'),
+              ]
+            ],
+          ),
+        ]),
       ),
     );
   }

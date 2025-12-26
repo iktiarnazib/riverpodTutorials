@@ -1,37 +1,56 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:riverpod_files/models/product.dart';
 
-class CartNotifier extends Notifier<Set<Product>> {
+part 'cart_provider.g.dart';
+
+@riverpod
+class CartNotifier extends _$CartNotifier {
   //Intiial value
   @override
   Set<Product> build() {
-    return const {
-      Product(
-          id: '2', title: 'Drum', price: 14, image: 'assets/products/drum.png')
-    };
+    return const {};
   }
 
 //Method to update the state
   void addProduct(Product product) {
     if (!state.contains(product)) {
-      state = {...state, product};
+      state = {
+        ...state,
+        product
+      }; //literally replacing the old cartNotifier build and making new one and replacing old one
     }
   }
 
   void removeProduct(Product product) {
     if (state.contains(product)) {
-      state = state
-          .where(
-            (p) => p.id != product.id,
-          )
-          .toSet();
+      state =
+          state //literally replacing the old cartNotifier build and making new one and replacing old one
+              .where(
+                (p) => p.id != product.id,
+              )
+              .toSet();
     }
   }
 }
 
 //manually written providerNotifier
-final cartNotifierProvider = NotifierProvider<CartNotifier, Set<Product>>(
-  () {
-    return CartNotifier();
-  },
-);
+// final cartNotifierProvider = NotifierProvider<CartNotifier, Set<Product>>(
+//   () {
+//     return CartNotifier();
+//   },
+// );
+
+//Provider Dependent Provider
+@riverpod
+int cartTotal(ref) {
+  final cartProducts = ref.watch(cartProvider);
+
+  int total = 0;
+
+  for (Product product in cartProducts) {
+    total += product.price;
+  }
+
+  return total;
+}

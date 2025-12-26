@@ -11,12 +11,37 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final List<Product> allProducts = ref.watch(productsProvider);
-    final cartProduct = ref.watch(cartNotifierProvider);
+    final cartProduct = ref.watch(cartProvider);
+    final totalPrice = ref.watch(cartTotalProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Garage Sale Products'),
-        actions: const [CartIcon()],
+        centerTitle: false,
+        actions: [
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
+              'Cart Value:',
+              style: TextStyle(
+                color: Colors.black,
+              ),
+            ),
+          ),
+          Card(
+            color: Colors.teal,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                '\$$totalPrice',
+                style: const TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          const CartIcon()
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -45,16 +70,19 @@ class HomeScreen extends ConsumerWidget {
                     OutlinedButton(
                         onPressed: () {
                           ref
-                              .read(cartNotifierProvider.notifier)
+                              .read(cartProvider.notifier)
                               .removeProduct(allProducts[index]);
                         },
                         child: const Text('Remove')),
                   if (!cartProduct.contains(allProducts[index]))
                     OutlinedButton(
                         onPressed: () {
-                          //to access method, we use ref.read(notifiername.notifier).methodName to make changes
+                          //ref.read just accesss the data, doesn't build the entire ui
+                          //ref.watch rebuilds the entire ui and looks for changes
+                          //ref.read(cartNotifierProvider.notifier) is used for changing the value of cartNotifierprovider value
+                          //ref.read(cartNotifierProvider) will be used when we just want to read the data
                           ref
-                              .read(cartNotifierProvider.notifier)
+                              .read(cartProvider.notifier)
                               .addProduct(allProducts[index]);
                           //in riverpod when reading read variable, we write ref.watch(provider_Name)
                         },

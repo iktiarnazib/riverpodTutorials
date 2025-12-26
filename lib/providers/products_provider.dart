@@ -1,5 +1,8 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:riverpod_files/models/product.dart';
+
+part 'products_provider.g.dart';
 
 const List<Product> allProducts = [
   Product(
@@ -25,14 +28,27 @@ const List<Product> allProducts = [
       image: 'assets/products/suitcase.png'),
 ];
 
-final productsProvider = Provider(
-  (ref) {
-    return allProducts;
-  },
-);
+//use of riverpod, read only values
+// final productsProvider = Provider(
+//   (ref) {
+//     return allProducts;
+//   },
+// );
 
-final reducedProductProvider = Provider(
-  (ref) {
-    return allProducts.where((P) => P.price < 20).toList();
-  },
-);
+// final reducedProductProvider = Provider(
+//   (ref) {
+//     return allProducts.where((P) => P.price < 20).toList();
+//   },
+// );
+
+//generated providers (Streamlined and easier to manage)
+
+@riverpod
+List<Product> Products(ref) {
+  return allProducts;
+}
+
+@riverpod
+List<Product> reducedProduct(ref) {
+  return allProducts.where((p) => p.price < 20).toList();
+}
